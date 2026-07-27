@@ -1,0 +1,45 @@
+name: CI
+
+# Pull requests and the default branch only. No schedule: a cron on a repo that
+# nobody is pushing to burns Actions minutes to re-prove the same commit.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  # A new push to a branch makes the previous run's answer irrelevant.
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # This job reads the tree and runs the gate; it never pushes or
+          # calls an authenticated API, so there is no reason to leave the
+          # token persisted in the runner's git config for the gate step.
+          persist-credentials: false
+
+      - name: Install uv
+        # v9.0.0, not v9: this action publishes a floating major tag only up to
+        # v7, so `@v9` resolves to nothing and every run dies at this step with
+        # "Unable to resolve action". `actions/checkout` above does publish a
+        # floating `v7`, which is why only one of these two is pinned exactly.
+        uses: astral-sh/setup-uv@v9.0.0
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      # The same script the pre-commit hook runs, so CI and the hook cannot
+      # drift into checking different things.
+      - name: Gate
+        run: uv run python scripts/gate.py

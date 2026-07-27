@@ -1,0 +1,180 @@
+[project]
+name = "blast-radar"
+version = "0.1.0"
+description = "Score the downstream blast radius of a data change, using DataHub's MCP server to read the lineage and to write the verdict back into the graph."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.11"
+authors = [
+    { name = "voyagi", email = "119620717+voyagi@users.noreply.github.com" }
+]
+keywords = ["datahub", "mcp", "lineage", "data-quality", "agent"]
+dependencies = [
+    "mcp>=1.28.1",
+    "rich>=15.0.0",
+    "typer>=0.27.0",
+]
+
+[project.scripts]
+blast-radar = "blast_radar.cli:main"
+
+[dependency-groups]
+dev = [
+    "anyio>=4.14.2",
+    "deptry>=0.25.1",
+    "hypothesis>=6.161.2",
+    "import-linter>=2.13",
+    "mypy>=1.20.2",
+    "pytest>=8.0.0",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.12",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.30,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+# The code was written to roughly this width; only one line in the tree exceeds
+# it. Picking 88 would reformat the whole repo for no readability gain and bury
+# the real changes in a review.
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "F",    # pyflakes
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "I",    # import sorting
+    "N",    # pep8 naming
+    "UP",   # pyupgrade
+    "B",    # bugbear
+    "C4",   # comprehensions
+    "C90",  # mccabe complexity
+    "SIM",  # simplify
+    "RET",  # return sanity
+    "PT",   # pytest style
+    "S",    # bandit security rules
+    "RUF",  # ruff's own
+]
+
+[tool.ruff.lint.mccabe]
+# The scoring factors and the brief renderer are flat by design. Anything past
+# this is a function doing more than one thing.
+max-complexity = 10
+
+[tool.ruff.lint.per-file-ignores]
+# Tests assert, and asserts are the point. S101 is a production rule.
+# S105 and S106 flag string literals that look like credentials, which is
+# precisely what a test for credential handling has to contain. The literals
+# here are obviously fake and never leave the suite.
+"tests/*" = ["S101", "S105", "S106"]
+"conftest.py" = ["S101"]
+# The gate runner shells out, and S603 asks whether the input is trusted. Every
+# command it runs is a string literal in the GATES tuple at the top of that
+# file, with no interpolation and no shell, so there is no untrusted input to
+# check for.
+"scripts/gate.py" = ["S603"]
+# The fake MCP result object copies the wire format's field names on purpose:
+# the wrapper reads `isError` and `structuredContent` off the real object by
+# those exact names, so renaming them to snake_case would make the fake stop
+# resembling the thing it stands in for.
+"tests/test_mcp_client.py" = ["S101", "N815"]
+
+[tool.mypy]
+python_version = "3.11"
+# What this project types strictly. `files` decides that for a bare `mypy`,
+# but only for a bare one: a caller that names a path wins over it, and one
+# does. A pre-push hook running `mypy .` pulls the suite in and then holds it
+# to `disallow_untyped_defs`, which this project does not ask of a test.
+# Rather than let the hook and the gate disagree about whether the tree is
+# clean, the override below gives the suite its own answer, and real type
+# errors in it are still reported either way.
+files = ["src/blast_radar"]
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unreachable = true
+no_implicit_optional = true
+strict_equality = true
+
+# Annotations are demanded of the package and not of the suite. Written this
+# way round, and not as a list of test modules to exempt, because a list is a
+# thing to keep up to date and this is not: a new test file is covered on the
+# day it is written. A test's signature carries nothing a reader needs, and
+# three hundred `-> None`s would bury the annotations that do carry something.
+#
+# What it costs, so nobody has to rediscover it: an unannotated function's
+# body is not type-checked, so the suite is checked shallowly. Turning that on
+# reports thirty-two errors, and all of them are the structural fakes the
+# suite is built on - a `FakeMCP` handed to something that asks for a
+# `DataHubMCP` is the whole point of the layering, not a mistake. Running the
+# tests is the stronger evidence about them anyway.
+[[tool.mypy.overrides]]
+module = ["blast_radar.*"]
+disallow_untyped_defs = true
+
+[tool.coverage.run]
+source = ["blast_radar"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+# The measured floor, so it can only go up. Branch coverage, which is the
+# stricter measure: it counts the untaken side of every conditional, and that
+# is the half that matters in a codebase whose hardest rule is telling
+# "unknown" apart from "zero".
+#
+# What the remaining gap is, so nobody chases it into a worse test: the stdio
+# subprocess in `open_datahub`, which needs a real MCP server rather than a
+# mock of one, and the transform half of the relaxation in `graph.py`, which
+# has no reachable lineage shape (the comment there records the search).
+fail_under = 98
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]
+
+# The architectural claim this project makes in its own README is that the graph
+# walk takes a fetch callable, scoring takes plain data, and write-back returns
+# intents, so most of the system is testable with no catalog and no network.
+# That is only true while the pure core imports nothing from the MCP side, which
+# is a property a reviewer cannot see and a refactor can quietly break. This
+# contract is what makes it checkable.
+[tool.importlinter]
+root_packages = ["blast_radar"]
+
+[[tool.importlinter.contracts]]
+name = "The pure core stays free of transport and I/O"
+type = "forbidden"
+source_modules = [
+    "blast_radar.models",
+    "blast_radar.config",
+    "blast_radar.scoring",
+    "blast_radar.brief",
+    "blast_radar.graph",
+]
+forbidden_modules = [
+    "blast_radar.mcp_client",
+    "blast_radar.datahub_adapter",
+    "blast_radar.writeback",
+    "blast_radar.bootstrap",
+    "blast_radar.cli",
+]
+
+[[tool.importlinter.contracts]]
+name = "Layers run one way"
+type = "layers"
+layers = [
+    "blast_radar.cli",
+    "blast_radar.scan",
+    "blast_radar.datahub_adapter",
+    "blast_radar.mcp_client",
+    "blast_radar.models",
+]
