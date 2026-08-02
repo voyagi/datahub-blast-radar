@@ -20,6 +20,12 @@ htmlcov/
 .blast-radar/
 demo-brief.md
 
+# Hackathon submission working files. Kept beside the project rather than on a
+# desktop somewhere, but out of the repo: the raw footage alone is ~100 MB and
+# there is no LFS here. The text files are drafts of what was pasted into the
+# submission form, and the copy of record is docs/submission.md.
+submission/
+
 # Local working notes and editor state, not part of the project
 .crash-buffers/
 .[a-z]*-notes/
