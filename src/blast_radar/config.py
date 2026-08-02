@@ -24,7 +24,7 @@ PLAINTEXT_OPT_OUT_VAR = "BLAST_RADAR_ALLOW_INSECURE_TOKEN"
 
 # The MCP server ships as a uvx-runnable package, which is how DataHub's own
 # docs tell people to run it. Running it that way (instead of vendoring it)
-# means we exercise the same server a judge would wire into Claude or Cursor.
+# means we exercise the same server any MCP client would connect to.
 #
 # Pinned, not @latest. Running this points a subprocess at your catalog with
 # mutations enabled and a token in its environment, and @latest means the

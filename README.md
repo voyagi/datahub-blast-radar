@@ -238,12 +238,6 @@ and dashboard was refused. `setup` defines it across all seven consumer types
 up front, and creates the four severity tags, since DataHub also refuses to
 attach a tag whose entity does not exist yet.
 
-## AI assistance disclosure
-
-Built with AI coding assistance (Claude). Every design decision, the scoring
-model, and the final code were reviewed by me, and I take responsibility for
-the submission.
-
 ## License
 
 Apache 2.0 - see [LICENSE](LICENSE).

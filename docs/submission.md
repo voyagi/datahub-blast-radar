@@ -169,12 +169,6 @@ Devpost puts the first image at the top of the gallery, so lead with
 `datahub-tag-on-asset.png` - it is the one that shows this is not a report,
 it is metadata.
 
-## AI assistance disclosure
-
-Built with AI coding assistance. Every design decision, the scoring model, and
-the final code were reviewed by me, and I take responsibility for the
-submission.
-
 ## Demo video script (target 2:30, hard cap 3:00)
 
 Record with OBS at 1080p. No face needed. Keep the terminal font large.

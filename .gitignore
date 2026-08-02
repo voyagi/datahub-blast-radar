@@ -20,6 +20,10 @@ htmlcov/
 .blast-radar/
 demo-brief.md
 
-# Local working notes, not part of the project
+# Local working notes and editor state, not part of the project
 .crash-buffers/
-.claude/
+.[a-z]*-notes/
+.claude*/
+.cursor*/
+.vscode/
+.idea/
