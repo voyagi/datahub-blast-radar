@@ -153,7 +153,7 @@ Python, MCP, DataHub, uv, Typer, Rich, pytest
 ## Try it out
 
 - GitHub: https://github.com/voyagi/datahub-blast-radar
-- Demo video: (pending, record with the script below)
+- Demo video: https://youtu.be/cS7aZmGJl9g
 
 ## Screenshots for the writeup
 

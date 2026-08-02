@@ -6,6 +6,9 @@ DataHub so the next person to touch the asset sees it too.
 
 Built for [Build with DataHub: The Agent Hackathon](https://datahub.devpost.com/).
 
+**[Watch the 2-minute demo](https://youtu.be/cS7aZmGJl9g)** - a real scan against
+DataHub's `showcase-ecommerce` catalog, from lineage to published verdict.
+
 ## The problem
 
 Someone is about to drop a column, rename a table, or retire a pipeline. The
