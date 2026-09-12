@@ -23,8 +23,14 @@ demo-brief.md
 # Hackathon submission working files. Kept beside the project rather than on a
 # desktop somewhere, but out of the repo: the raw footage alone is ~100 MB and
 # there is no LFS here. The text files are drafts of what was pasted into the
-# submission form, and the copy of record is docs/submission.md.
+# submission form; the pasted copy itself, docs/submission.md, left the tracked
+# tree on 2026-09-12 and lives on the local disk only.
 submission/
+
+# Local environment files (a DataHub token lives here); the example stays
+.env
+.env.*
+!.env.example
 
 # Local working notes and editor state, not part of the project
 .crash-buffers/

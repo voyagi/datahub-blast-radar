@@ -6,15 +6,15 @@ happily if every score in the system shifts by the same amount, because they onl
 compare scores to each other.
 
 That matters here because the published numbers are load-bearing. `README.md`
-prints a real run, `docs/submission.md` quotes it, and `docs/screenshots/` froze it
-as images that cannot be re-shot without standing DataHub back up. A refactor that
-moves the scale would leave the code correct, every behavioral test green, and all
-three of those documents quietly wrong.
+prints a real run, the hackathon entry page quotes it, and `docs/screenshots/`
+froze it as images that cannot be re-shot without standing DataHub back up. A
+refactor that moves the scale would leave the code correct, every behavioral test
+green, and all of those quietly wrong.
 
 So these tests exist to FAIL on change. A diff here is not automatically a bug: it
-means the published numbers, the screenshots, and the submission copy need to be
-re-checked, and the golden values updated in the same commit. Treat a failure as a
-question, not a verdict.
+means the published numbers and the screenshots need to be re-checked, and the
+golden values updated in the same commit. Treat a failure as a question, not a
+verdict.
 """
 
 from __future__ import annotations
