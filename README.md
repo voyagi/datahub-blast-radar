@@ -205,7 +205,6 @@ assets, because a flooded graph is a useless one):
 |---|---|
 | `src/blast_radar/` | The tool |
 | `docs/local-datahub.md` | Standing up DataHub locally, including the Windows potholes |
-| `docs/submission.md` | Devpost copy, demo video script, recording checklist |
 | `docs/screenshots/` | The verdict as it lands in DataHub |
 | `scripts/demo-run.ps1` | One-take demo driver with preflight |
 
